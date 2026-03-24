@@ -10,19 +10,7 @@ const api = axios.create({
   },
 })
 
-// Request interceptor to add JWT token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+
 
 // Response interceptor for error handling
 api.interceptors.response.use(
@@ -31,11 +19,7 @@ api.interceptors.response.use(
     const { response } = error
     
     if (response?.status === 401) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('user')
-      window.location.href = '/login'
-      toast.error('Session expired. Please login again.')
+      toast.error('Authentication error.')
     } else if (response?.status === 403) {
       toast.error('You do not have permission to perform this action.')
     } else if (response?.status === 404) {
@@ -54,13 +38,7 @@ api.interceptors.response.use(
 
 export default api
 
-// Auth API
-export const authAPI = {
-  login: (email, password) => api.post('/auth/login/', { email, password }),
-  refresh: (refreshToken) => api.post('/auth/refresh/', { refresh: refreshToken }),
-  logout: () => api.post('/auth/logout/'),
-  me: () => api.get('/auth/me/'),
-}
+
 
 // Tickets API
 export const ticketsAPI = {

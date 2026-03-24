@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { authAPI } from '../api/axios.js'
 
 const AuthContext = createContext(null)
 
@@ -16,59 +15,29 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem('access_token')
-      const savedUser = localStorage.getItem('user')
-      
-      if (token && savedUser) {
-        try {
-          setUser(JSON.parse(savedUser))
-          // Verify token is still valid
-          const response = await authAPI.me()
-          setUser(response.data)
-          localStorage.setItem('user', JSON.stringify(response.data))
-        } catch (error) {
-          localStorage.removeItem('access_token')
-          localStorage.removeItem('refresh_token')
-          localStorage.removeItem('user')
-          setUser(null)
-        }
-      }
-      setLoading(false)
-    }
-    
-    initAuth()
+    // Hardcode a dummy admin user
+    setUser({
+      id: 1,
+      name: "Admin User",
+      email: "admin@example.com",
+      role: "admin",
+      is_staff: true,
+      is_superuser: true
+    })
+    setLoading(false)
   }, [])
 
   const login = useCallback(async (email, password) => {
-    const response = await authAPI.login(email, password)
-    const { access, refresh, user } = response.data
-    
-    localStorage.setItem('access_token', access)
-    localStorage.setItem('refresh_token', refresh)
-    localStorage.setItem('user', JSON.stringify(user))
-    
-    setUser(user)
     return user
-  }, [])
+  }, [user])
 
   const logout = useCallback(async () => {
-    try {
-      await authAPI.logout()
-    } catch (error) {
-      // Ignore error
-    } finally {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('user')
-      setUser(null)
-    }
+    // Do nothing, auth is disabled
   }, [])
 
   const updateUser = useCallback((updates) => {
     const updatedUser = { ...user, ...updates }
     setUser(updatedUser)
-    localStorage.setItem('user', JSON.stringify(updatedUser))
   }, [user])
 
   const value = {
@@ -77,7 +46,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     updateUser,
-    isAuthenticated: !!user,
+    isAuthenticated: true,
   }
 
   return (
