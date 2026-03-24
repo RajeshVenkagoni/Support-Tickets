@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Loader2, Clock } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ticketsAPI, categoriesAPI } from '../api/axios.js'
-import { formatDate, addHours } from 'date-fns'
+import { addHours } from 'date-fns'
+import { formatDate } from '../utils/format.js'
 
 const prioritySLA = {
   critical: 4,    // 4 hours
