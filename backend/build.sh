@@ -22,3 +22,7 @@ for priority, response, resolution in policies:
     )
 print('SLA policies created')
 EOF
+
+# Seed sample data (tickets, categories, agents) if database is empty
+python manage.py seed_data || echo "Seed data already exists or command not available"
+
